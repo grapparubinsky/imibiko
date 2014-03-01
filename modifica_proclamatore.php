@@ -1,13 +1,14 @@
 <?php
-$page="modifica_proclamatore";
+$page="nuovo_proclamatore";
 $title="Rapporti > modifica proclamatore";
 $thead="Modifica proclamatore";
-include('include/general.php');
 include('include/config.php');
+include('include/general.php');
 
 if(!isset($_POST['nome']) && !empty($_GET['id'])) {
-   $sel=mysqli_query($mysqli, "SELECT * FROM proclamatori AS p JOIN contatti AS c ON p.id = c.id_p WHERE p.id = '{$_GET['id']}'");
+   $sel=mysqli_query($mysqli, "SELECT * FROM proclamatori AS p JOIN contatti AS c ON p.id = c.id_p INNER JOIN gruppi AS g ON p.gruppo_id = g.id WHERE p.id = '{$_GET['id']}'") or die(mysqli_error($mysqli));
    $r=mysqli_fetch_assoc($sel);
+  
    /*
    if($r['unto'] == "1") $unto_check="checked"; else $unto_check="";
    if($r['anziano'] == "1") $anziano_check="checked"; else $anziano_check="";
@@ -71,9 +72,24 @@ if(!isset($_POST['nome']) && !empty($_GET['id'])) {
 	  <input id="n_cell" name="n_cell" value="{$r['n_cell']}">
 	  </br>
 	</section>
-      <input type="submit" value="Registra">
-      </form>
-      </div>
+	<section>
+      	<h3>Gruppo di servizio</h3>
+      	<label for="gruppo">Assegna al gruppo</label>
+      	<input type="text" id="gruppo" name="gruppo" value="{$r['nome_gruppo']}">
+      	<input type="hidden" id="gruppo_id" name="gruppo_id" value="{$r['gruppo_id']}">
+      </section>
+    <input type="submit" value="Registra">
+    </form>
+    </div>
+<script type="text/javascript">
+	var options = {
+		script:"proc_ajax.php?json=true&",
+		varname:"gruppo",
+		json:true,
+		callback: function (obj) { document.getElementById('gruppo_id').value = obj.id; }
+	};
+	var as_json = new AutoSuggest('gruppo', options);
+</script>
 EOD;
 
 } elseif(!empty($_POST['nome'])) {
@@ -82,22 +98,23 @@ EOD;
     if(isset($_POST['servitore'])) $servitore="1"; else $servitore="0";
     
   $edit_proc=mysqli_query($mysqli, "UPDATE proclamatori 
-      SET nome 		= '{$_POST['nome']}', 
-	  cognome	= '{$_POST['cognome']}', 
-	  d_nascita	= '{$_POST['d_nascita']}', 
-	  d_battesimo	= '{$_POST['d_battesimo']}', 
-	  unto 		= '{$unto}', 
-	  anziano	= '{$anziano}', 
-	  servitore	= '{$servitore}', 
-	  pioniere	= '{$_POST['pioniere']}' 
-      WHERE id		= '{$_POST['idp']}'") or die(mysqli_error($mysqli));
+      SET gruppo_id 	= '{$_POST['gruppo_id']}', 
+      nome 				= '{$_POST['nome']}', 
+	  cognome			= '{$_POST['cognome']}', 
+	  d_nascita			= '{$_POST['d_nascita']}', 
+	  d_battesimo		= '{$_POST['d_battesimo']}', 
+	  unto 				= '{$unto}', 
+	  anziano			= '{$anziano}', 
+	  servitore			= '{$servitore}', 
+	  pioniere			= '{$_POST['pioniere']}' 
+      WHERE id			= '{$_POST['idp']}'") or die(mysqli_error($mysqli));
       
   $edit_cont=mysqli_query($mysqli, "UPDATE contatti 
-      SET comune	= '{$_POST['comune']}', 
-	  address	= '{$_POST['address']}', 
-	  n_casa	= '{$_POST['n_casa']}', 
-	  n_cell	= '{$_POST['n_cell']}'
-      WHERE id_p	= '{$_POST['idp']}'") or die(mysqli_error($mysqli));
+      SET comune		= '{$_POST['comune']}', 
+	  address			= '{$_POST['address']}', 
+	  n_casa			= '{$_POST['n_casa']}', 
+	  n_cell			= '{$_POST['n_cell']}'
+      WHERE id_p		= '{$_POST['idp']}'") or die(mysqli_error($mysqli));
 	
 
 /*

@@ -1,16 +1,28 @@
 <?php
 include("include/config.php");
-if($_POST)
-  {
-  $sql_res=mysqli_query("SELECT id, nome, cognome, anziano, servitore FROM proclamatori WHERE anziano = '1' OR servitore = '1' ORDER BY cognome");
-  while($row=mysql_fetch_array($sql_res))
-  {
-  $name=$row['nme'].' '.$row['cognome'];
-  $idp=$row['id'];
-  ?>
-  <div class="show" align="left">
-  <span class="name"><?php echo $name; ?></span>&nbsp;<br/><?php echo $id; ?><br/>
-  </div>
-  <?php
-  }
-}
+if (isset($_REQUEST['json']))
+	{
+		header("Content-Type: application/json");
+		if(isset($_GET['nominati'])) {
+		$sql_res=mysqli_query($mysqli, "SELECT id, nome, cognome, anziano, servitore FROM proclamatori WHERE anziano = '1' OR servitore = '1' AND nome LIKE '%{$_GET['nominati']}%' ORDER BY nome DESC");
+			while($row=mysqli_fetch_array($sql_res)) {
+			  $value[]=$row['nome'].' '.$row['cognome'];
+			  $id[]=$row['id'];
+		  }
+		
+		} elseif(isset($_GET['gruppo'])) {
+		$sql_res=mysqli_query($mysqli, "SELECT id, nome_gruppo FROM gruppi WHERE nome_gruppo LIKE '%{$_GET['gruppo']}%' ORDER BY nome_gruppo DESC");
+			while($row=mysqli_fetch_array($sql_res)) {
+			  $value[]=$row['nome_gruppo'];
+			  $id[]=$row['id'];
+		  }
+		}
+		echo "{\"results\": [";
+		$arr = array();
+		for ($i=0;$i<count($value);$i++)
+		{
+			$arr[] = "{\"id\": \"".$id[$i]."\", \"value\": \"".$value[$i]."\", \"info\": \"\"}";
+		}
+		echo implode(", ", $arr);
+		echo "]}";
+	}

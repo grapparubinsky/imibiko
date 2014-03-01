@@ -1,4 +1,5 @@
 <?php
+$BASE_URL='http://'.$_SERVER['SERVER_NAME'].'/imibiko';
 // connessione a MySQL con l'estensione MySQLi
 $mysqli = new mysqli("localhost", "root", "root", "rappro");
  
