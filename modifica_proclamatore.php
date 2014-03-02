@@ -4,6 +4,7 @@ $title="Rapporti > modifica proclamatore";
 $thead="Modifica proclamatore";
 include('include/config.php');
 include('include/general.php');
+include('include/functions.php');
 
 if(!isset($_POST['nome']) && !empty($_GET['id'])) {
    $sel=mysqli_query($mysqli, "SELECT * FROM proclamatori AS p JOIN contatti AS c ON p.id = c.id_p INNER JOIN gruppi AS g ON p.gruppo_id = g.id WHERE p.id = '{$_GET['id']}'") or die(mysqli_error($mysqli));
@@ -15,10 +16,6 @@ if(!isset($_POST['nome']) && !empty($_GET['id'])) {
    if($r['servitore'] == "1") $servitore_check="checked"; else $servitore_check="";
    */
    
-   function inputcheck($var, $condition, $return) {
-      if($var == "$condition") return $return;
-	else return $a="";
-   }
    
    $unto_check=inputcheck($r['unto'], '1', 'checked');
    $anziano_check=inputcheck($r['anziano'], '1', 'checked');

@@ -4,7 +4,7 @@ $title="Rapporti > nuovo proclamatore";
 $thead="Nuovo proclamatore";
 include('include/config.php');
 include('include/general.php');
-
+include('include/functions.php');
 if(!isset($_POST['nome'])) {
 
   $Body=<<<EOD

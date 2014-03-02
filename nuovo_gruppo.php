@@ -4,6 +4,7 @@ $title="Rapporti > nuovo gruppo";
 $thead="Nuovo Gruppo di servizio";
 include('include/config.php');
 include('include/general.php');
+include('include/functions.php');
 if(!isset($_POST['nome_gruppo'])) {
 $_js="\$";
   $Body=<<<EOD
