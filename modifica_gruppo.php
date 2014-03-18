@@ -70,6 +70,29 @@ $Body=<<<EOD
       </section>
 </div>
 EOD;
+} else {
+	$Body=<<<EOD
+	<div id="content-wrapper">
+      <section>
+	  <h3>Seleziona il gruppo da modificare</h3>
+	  <form method="GET" action="">
+	  	<input required type="text" id="gruppo" placeholder="Inserisci il gruppo"/>
+	  	 <input type="hidden" id="gruppo_id" name="id"/>
+	  	<input type="submit" value="Modifica">
+	  </form>
+      </section>
+</div>
+<script type="text/javascript">
+	var options_gruppo = {
+		script:"ajax/proc.php?json=true&",
+		varname:"gruppo",
+		json:true,
+		callback: function (obj) { document.getElementById('gruppo_id').value = obj.id; }
+	};
+	var as_json = new AutoSuggest('gruppo', options_gruppo);
+
+</script>
+EOD;
 }
 
 echo $Header;
