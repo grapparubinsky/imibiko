@@ -1,5 +1,5 @@
 <?php
-include("include/config.php");
+include("../include/config.php");
 if (isset($_REQUEST['json']))
 	{
 		header("Content-Type: application/json");
@@ -14,6 +14,12 @@ if (isset($_REQUEST['json']))
 		$sql_res=mysqli_query($mysqli, "SELECT id, nome_gruppo FROM gruppi WHERE nome_gruppo LIKE '%{$_GET['gruppo']}%' ORDER BY nome_gruppo DESC");
 			while($row=mysqli_fetch_array($sql_res)) {
 			  $value[]=$row['nome_gruppo'];
+			  $id[]=$row['id'];
+		  }
+		} elseif(isset($_GET['proclamatore'])) {
+		$sql_res=mysqli_query($mysqli, "SELECT id, nome, cognome FROM proclamatori WHERE nome LIKE '%{$_GET['proclamatore']}%' OR cognome LIKE '%{$_GET['proclamatore']}%'");
+			while($row=mysqli_fetch_array($sql_res)) {
+			   $value[]=$row['nome'].' '.$row['cognome'];
 			  $id[]=$row['id'];
 		  }
 		}

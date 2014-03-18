@@ -22,9 +22,9 @@ if(!isset($_POST['nome']) && !empty($_GET['id'])) {
    $servitore_check=inputcheck($r['servitore'], '1', 'checked');
    
    $pion_check['no']=inputcheck($r['pioniere'], '0', 'selected');
-   $pion_check['aus']=inputcheck($r['pioniere'], '1', 'selected');
-   $pion_check['reg']=inputcheck($r['pioniere'], '2', 'selected');
-   $pion_check['spec']=inputcheck($r['pioniere'], '3', 'selected');
+   $pion_check['aus']=inputcheck($r['pioniere'], '2', 'selected');
+   $pion_check['reg']=inputcheck($r['pioniere'], '3', 'selected');
+   $pion_check['spec']=inputcheck($r['pioniere'], '4', 'selected');
    
     $Body=<<<EOD
 
@@ -49,9 +49,9 @@ if(!isset($_POST['nome']) && !empty($_GET['id'])) {
 	      <label for="pioniere">Pioniere</label>
 	      <select id="pioniere" name="pioniere">
 		  <option value="0" {$pion_check['no']}>No</option>
-		  <option value="1" {$pion_check['aus']}>Ausiliario tempo ind.</option>
-		  <option value="2" {$pion_check['reg']}>Regolare</option>
-		  <option valuissete="3" {$pion_check['spec']}>Speciale</option>
+		  <option value="2" {$pion_check['aus']}>Ausiliario tempo ind.</option>
+		  <option value="3" {$pion_check['reg']}>Regolare</option>
+		  <option valuissete="4" {$pion_check['spec']}>Speciale</option>
 	      </select>
 	</section>
 	<section>
@@ -80,7 +80,7 @@ if(!isset($_POST['nome']) && !empty($_GET['id'])) {
     </div>
 <script type="text/javascript">
 	var options = {
-		script:"proc_ajax.php?json=true&",
+		script:"ajax/proc.php?json=true&",
 		varname:"gruppo",
 		json:true,
 		callback: function (obj) { document.getElementById('gruppo_id').value = obj.id; }

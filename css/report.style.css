@@ -62,7 +62,7 @@ tspan {
 }
 h3 {
 	font-size:1.3em;
-	text-align:center;
+	text-align:left;
 	color: #274b6d;
 	font-weight:400;
 }
@@ -94,5 +94,11 @@ summary h2 {
 }
 input {
     padding:10px;
-    
+}
+table input {
+	width:80%;
+	text-align:center;
+}
+table th{
+	text-align:left;
 }

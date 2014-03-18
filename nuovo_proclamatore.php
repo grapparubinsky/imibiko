@@ -29,9 +29,9 @@ if(!isset($_POST['nome'])) {
 	    <label for="pioniere">Pioniere</label>
 	    <select id="pioniere" name="pioniere">
 		<option value="0">No</option>
-		<option value="1">Ausiliario tempo ind.</option>
-		<option value="2">Regolare</option>
-		<option value="3">Speciale</option>
+		<option value="2">Ausiliario tempo ind.</option>
+		<option value="3">Regolare</option>
+		<option value="4">Speciale</option>
 	    </select>
       </section>
       <section>
@@ -60,7 +60,7 @@ if(!isset($_POST['nome'])) {
     </div>
 <script type="text/javascript">
 	var options = {
-		script:"proc_ajax.php?json=true&",
+		script:"ajax/proc.php?json=true&",
 		varname:"gruppo",
 		json:true,
 		callback: function (obj) { document.getElementById('gruppo_id').value = obj.id; }

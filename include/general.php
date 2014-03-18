@@ -1,22 +1,15 @@
 <?php
-if($page=="nuovo_gruppo" OR $page=="nuovo_proclamatore") {
-	$other_calls=<<<EOD
-		<script type="text/javascript" src="{$BASE_URL}/js/bsn.AutoSuggest_c_2.0.js"></script>
-		<link rel="stylesheet" href="{$BASE_URL}/css/autosuggest_inquisitor.css" type="text/css" media="screen" charset="utf-8" />
-EOD;
-} else {
-	$other_cass="";
-}
 
 $Header=<<<EOD
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset='utf-8'>
-   <title>$title</title>
-  <link rel="stylesheet" href="{$BASE_URL}/css/report.style.css">
-  $other_calls
-</head>
+  	<meta charset='utf-8'>
+   	<title>$title</title>
+ 	<link rel="stylesheet" href="{$BASE_URL}/css/report.style.css">
+  	<script type="text/javascript" src="{$BASE_URL}/js/bsn.AutoSuggest_c_2.0.js"></script>
+	<link rel="stylesheet" href="{$BASE_URL}/css/autosuggest_inquisitor.css" type="text/css" media="screen" charset="utf-8" />
+	<script type='text/javascript' src='//code.jquery.com/jquery-1.9.1.js'></script>
 <body>
   <div id="header-wrapper">
 	  <div id="header">

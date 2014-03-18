@@ -29,7 +29,7 @@ $_js="\$";
     </div>
 <script type="text/javascript">
 	var options_sorvegliante = {
-		script:"proc_ajax.php?json=true&",
+		script:"ajax/proc.php?json=true&",
 		varname:"nominati",
 		json:true,
 		callback: function (obj) { document.getElementById('sorvegliante_id').value = obj.id; }
@@ -37,7 +37,7 @@ $_js="\$";
 	var as_json = new AutoSuggest('sorvegliante', options_sorvegliante);
 	
 	var options_assistente = {
-		script:"proc_ajax.php?json=true&",
+		script:"ajax/proc.php?json=true&",
 		varname:"nominati",
 		json:true,
 		callback: function (obj) { document.getElementById('assistente_id').value = obj.id; }
