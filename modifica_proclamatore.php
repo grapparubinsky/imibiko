@@ -7,7 +7,7 @@ include('include/general.php');
 include('include/functions.php');
 
 if(!isset($_POST['nome']) && !empty($_GET['id'])) {
-   $sel=mysqli_query($mysqli, "SELECT * FROM proclamatori AS p JOIN contatti AS c ON p.id = c.id_p INNER JOIN gruppi AS g ON p.gruppo_id = g.id WHERE p.id = '{$_GET['id']}'") or die(mysqli_error($mysqli));
+   $sel=mysqli_query($mysqli, "SELECT * FROM proclamatori AS p LEFT JOIN contatti AS c ON p.id = c.id_p LEFT JOIN gruppi AS g ON p.gruppo_id = g.id WHERE p.id = '{$_GET['id']}'") or die(mysqli_error($mysqli));
    $r=mysqli_fetch_assoc($sel);
   
    /*

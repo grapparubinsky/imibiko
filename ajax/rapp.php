@@ -6,16 +6,12 @@ include('../include/functions.php');
 //echo '</pre>';
 $_js="\$";
 
-
-
-
-
 if(isset($_GET['insert'])) {
 $p=$_GET;	
 	for ($i=0; $i < count($p['id']); $i++) {
 		
 		$kid[$i]=$p['id'][$i].$p['mese'][$i].$p['anno'][$i];
-		
+	
 		if(!empty($p['ore'][$i]) || $p['irreg'][$i] == '1') {
 		$upd=mysqli_query($mysqli, "INSERT INTO 
 			reports (id_p, kid, mese, anno, libri, opuscoli, ore, riviste, visite, studi, note, pioniere, anziano, servitore, unto, irreg)
@@ -36,8 +32,10 @@ $p=$_GET;
 					irreg = '{$p['irreg'][$i]}';") or die(mysqli_error($mysqli));
 		}
 	}
+
+
 	echo '<pre>';
-	print_r($GLOBALS);
+	//print_r($GLOBALS);
 } elseif (!empty($_GET['gruppo_id']) && empty($_GET['id_p']) && !empty($_GET['mese'])) {
 	$table="";
 	$sel_proc=mysqli_query($mysqli, "SELECT id, gruppo_id, nome, cognome, pioniere, servitore, unto, anziano FROM proclamatori WHERE gruppo_id = '{$_GET['gruppo_id']}' AND status = '0' ORDER BY cognome DESC") or die(mysqli_error($mysqli));
