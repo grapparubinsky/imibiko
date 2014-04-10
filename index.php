@@ -11,6 +11,7 @@ include('include/general.php');
       <section>
 		  <h3>Naviga nel sito</h3>
 		  <br/>
+		  <input type="button" value="Totali" ONCLICK="window.location.href='totali.php'">
 		  <input type="button" value="Inserimento Rapporti" ONCLICK="window.location.href='inserimento_rapporti.php'"></br>
 		  <input type="button" value="Nuovo Proclamatore" ONCLICK="window.location.href='nuovo_proclamatore.php'">
 		  <input type="button" value="Nuovo Gruppo" ONCLICK="window.location.href='nuovo_gruppo.php'">
