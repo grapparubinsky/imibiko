@@ -39,7 +39,7 @@ $p=$_GET;
 } elseif (!empty($_GET['gruppo_id']) || !empty($_GET['id_p']) && !empty($_GET['mese'])) {
 	$table="";
 	if(!empty($_GET['gruppo_id'])) {
-		$sel_proc=mysqli_query($mysqli, "SELECT id, gruppo_id, nome, cognome, pioniere, servitore, unto, anziano FROM proclamatori WHERE gruppo_id = '{$_GET['gruppo_id']}' AND status = '0' ORDER BY cognome DESC") or die(mysqli_error($mysqli));
+		$sel_proc=mysqli_query($mysqli, "SELECT id, gruppo_id, nome, cognome, pioniere, servitore, unto, anziano FROM proclamatori WHERE gruppo_id = '{$_GET['gruppo_id']}' AND status = '0' ORDER BY cognome ASC") or die(mysqli_error($mysqli));
 	} elseif(!empty($_GET['id_p'])) {
 		$sel_proc=mysqli_query($mysqli, "SELECT id, gruppo_id, nome, cognome, pioniere, servitore, unto, anziano FROM proclamatori WHERE id = '{$_GET['id_p']}' ORDER BY cognome DESC") or die(mysqli_error($mysqli));	
 	}
