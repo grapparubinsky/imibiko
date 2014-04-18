@@ -96,7 +96,7 @@ EOD;
 				FROM reports
 				WHERE mese = '{$_GET['mese']}' 
 					AND anno = '{$_GET['anno']}' 
-					AND pioniere = '1' OR pioniere = '2'");
+					AND (pioniere = '1' OR pioniere = '2')");
 					
 					while($t_aus=mysqli_fetch_assoc($tot_rap_aus)) {
 						$table_tot.=<<<EOD
