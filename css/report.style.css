@@ -48,7 +48,6 @@ h1, h2, h3, h4, h5 {
 }
 #header h1 {
 	color:#26AA4E;
-	margin-left:-10px;
 	display:inline-block;
 }
 h2 span {
@@ -101,4 +100,14 @@ table input {
 }
 table th{
 	text-align:left;
+}
+
+@media print
+{
+  table { page-break-after:auto }
+  tr    { page-break-inside:avoid; page-break-after:auto }
+  td    { page-break-inside:avoid; page-break-after:auto }
+  thead { display:table-header-group }
+  tfoot { display:table-footer-group }
+  #header-wrapper, #filtra, .printhidden {display:none}
 }

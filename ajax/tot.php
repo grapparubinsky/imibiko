@@ -181,7 +181,7 @@ EOD;
 					while($t_all=mysqli_fetch_assoc($tot_all)) {
 						if(($rman['pid']) !== ($t_all['n'])) {
 							$diff=($rman['pid'])-($t_all['n']);
-							$msg="Rapporti mancanti: $diff. Non considerare i nuovi proclamatori aggiunti."; 
+							$msg="<div class='printhidden'>Rapporti mancanti: $diff. Non considerare i nuovi proclamatori aggiunti.</div>"; 
 						} else {$msg="";}
 						$table_tot.=<<<EOD
 							<tr>
@@ -217,7 +217,7 @@ EOD;
 		background:#FFF;
 	}
 	</style>	
-	<h3>Rapporto {$_GET['mese']}/{$_GET['anno']}</h3>
+	<h3>Rapporto Congregazione ({$_GET['mese']}/{$_GET['anno']})</h3>
 	$msg
 	<table cellspacing="10">
 		<tr>

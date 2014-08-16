@@ -16,7 +16,7 @@ if(!isset($_POST['id'])) {
         }
   $Body=<<<EOD
     <div id="content-wrapper">
-	      <section>
+	      <section id="filtra">
 		  	<h3>Filtra</h3>
 		  	<form id="ajaxform">
 		  	<label for="mese">Mese</label>
@@ -60,6 +60,7 @@ if(!isset($_POST['id'])) {
 
 </script>
 </script>
+
 EOD;
 }
 
