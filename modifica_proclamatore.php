@@ -76,6 +76,7 @@ if(!isset($_POST['nome']) && !empty($_GET['id'])) {
       	<input type="hidden" id="gruppo_id" name="gruppo_id" value="{$r['gruppo_id']}">
       </section>
     <input type="submit" value="Registra">
+    oppure <a href="elimina_proclamatore.php?id={$_GET['id']}" onclick="return confirm('Sicuro di voler cancellarlo?');">elimina questo proclamatore</a>.
     </form>
     </div>
 <script type="text/javascript">
