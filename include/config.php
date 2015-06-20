@@ -8,11 +8,11 @@ $LocalDb['db'] = "imibiko";
 
 $RemoteDb['host'] = "kenjoi.com";
 $RemoteDb['user'] = "imibikosql";
-$RemoteDb['pass'] = "tnAtYKbWzjzdNL6q";
+$RemoteDb['pass'] = "7Q6ycUuNYPhFmn7d";
 $RemoteDb['db'] = "imibiko";
 
 // connessione a MySQL con l'estensione MySQLi
-$mysqli = new mysqli("localhost", "root", "root", "imibiko");
+$mysqli = new mysqli($LocalDb['host'], $LocalDb['user'], $LocalDb['pass'], $LocalDb['db']);
  
 // verifica dell'avvenuta connessione
 if (mysqli_connect_errno()) {
