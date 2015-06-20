@@ -1,5 +1,16 @@
 <?php
 $BASE_URL='http://'.$_SERVER['SERVER_NAME'].'/imibiko';
+
+$LocalDb['host'] = "localhost";
+$LocalDb['user'] = "root";
+$LocalDb['pass'] = "root";
+$LocalDb['db'] = "imibiko";
+
+$RemoteDb['host'] = "kenjoi.com";
+$RemoteDb['user'] = "imibikosql";
+$RemoteDb['pass'] = "tnAtYKbWzjzdNL6q";
+$RemoteDb['db'] = "imibiko";
+
 // connessione a MySQL con l'estensione MySQLi
 $mysqli = new mysqli("localhost", "root", "root", "imibiko");
  
@@ -11,3 +22,5 @@ if (mysqli_connect_errno()) {
         exit();
  
 }
+
+

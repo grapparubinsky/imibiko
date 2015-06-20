@@ -1,23 +1,23 @@
 <?php 
-
+require_once (__DIR__.'/../include/config.php');
 require_once (__DIR__.'/../include/dumper.php');
 $source = $_REQUEST['source'];
 if(empty($source) && !empty($argv[2])) $source = $argv[2]; 
 if($source == 'locale') {
 
 	$world_dumper = Shuttle_Dumper::create(array(
-		'host' => 'localhost',
-		'username' => 'root',
-		'password' => 'root',
-		'db_name' => 'imibiko',
+		'host' => $LocalDb['host'],
+		'username' => $LocalDb['user'],
+		'password' => $LocalDb['pass'],
+		'db_name' => $LocalDb['db'],
 	));
 	
 } elseif ($source == 'remote') {
 	$world_dumper = Shuttle_Dumper::create(array(
-		'host' => 'kenjoi.com', 
-		'username' => 'imibikosql',
-		'password' => 'tnAtYKbWzjzdNL6q',
-		'db_name' => 'imibiko',
+		'host' => $RemoteDb['host'],
+		'username' => $RemoteDb['user'],
+		'password' => $RemoteDb['pass'],
+		'db_name' => $RemoteDb['db'],
 	));
 	
 }
