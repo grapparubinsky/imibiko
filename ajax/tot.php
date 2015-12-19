@@ -11,16 +11,20 @@ if (!empty($_GET['mese'])) {
 	
 	/* fai il controllo rapporti mancanti */
 	$msg_content="";
-	$all_proc=mysqli_query($mysqli, "SELECT id, nome, cognome FROM proclamatori LEFT JOIN gruppi ON gruppi.id = proclamatori.gruppo_id WHERE status = 0");
+	$all_proc=mysqli_query($mysqli, "SELECT p.id, p.nome, p.cognome, g.nome_gruppo FROM proclamatori AS p LEFT JOIN gruppi AS g ON g.id = p.gruppo_id WHERE p.status = 0");
 	while ($check = mysqli_fetch_object($all_proc)) {
 		$check_month_vs_proc=mysqli_query($mysqli, "SELECT * FROM `proclamatori` AS p LEFT JOIN reports AS r ON p.id = r.id_p WHERE r.id_p = {$check->id} AND (r.mese = {$_GET['mese']} AND r.anno = {$_GET['anno']})");		
-		$res_check=mysqli_fetch_object($check_month_vs_proc);
-		if(empty($res_check)) $msg_content.= "<b>{$check->nome} {$check->cognome}</b> -> gruppo {$check->nome_gruppo}";
+	
+	$res_check=mysqli_fetch_object($check_month_vs_proc);
+		if(empty($res_check)) $msg_content.= "<li>Rapporto mancante: <b>{$check->nome} {$check->cognome}</b> -> gruppo {$check->nome_gruppo}";
 	}
 	
-	if(!empty($msg_content)) {
-		$msg="<div class='printhidden'>$msg_content</div>"; 
-	}
+$msg = <<<EOD
+ <div class="alert alert-danger fade in printhidden">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    <strong>Attenzione!</strong> {$msg_content}
+  </div>
+EOD;
 	
 	
 	$table="";

@@ -21,10 +21,11 @@ if (!empty($_GET['id_p'])) {
 		FROM reports AS r 
 		LEFT JOIN proclamatori AS p 
 			ON r.id_p = p.id 
-		WHERE (r.mese > 9 AND r.anno = '{$anno_minus_one}') 
-						OR (r.mese < 9 AND r.anno = '{$_GET['anno']}') 
-						AND r.id_p = {$_GET['id_p']}
-		ORDER BY anno, mese ASC");
+		WHERE (r.mese >= 9 AND r.anno = '{$anno_minus_one}' AND r.id_p = {$_GET['id_p']}) 
+						OR (r.mese < 9 AND r.anno = '{$_GET['anno']}' AND r.id_p = {$_GET['id_p']}) 
+		ORDER BY anno, mese+1 ASC");
+
+
 
 		if(mysqli_num_rows($sel_rap) !== 0) {
 				
@@ -74,21 +75,20 @@ EOD;
 				$tot_all=mysqli_query($mysqli, 
 				"SELECT SUM(libri) AS lib, SUM(opuscoli) AS opu, SUM(ore) AS ore, SUM(riviste) AS riv, SUM(visite) AS vis, SUM(studi) AS stu
 				FROM reports
-				WHERE (mese > 9 AND anno = '{$anno_minus_one}') 
-						OR (mese < 9 AND anno = '{$_GET['anno']}') 
-						AND id_p = {$_GET['id_p']}");
+				WHERE (mese > 9 AND anno = '{$anno_minus_one}'  AND id_p = {$_GET['id_p']}) 
+						OR (mese < 9 AND anno = '{$_GET['anno']}' AND id_p = {$_GET['id_p']})");
 					 
 					$t_all=mysqli_fetch_assoc($tot_all);
 					
 						$table_tot.=<<<EOD
 							<tr style="background:#26AA4E;color:#fff">
 								<td><b>Totale anno teocratico</b></td>
-								<td><b>{$t_all['lib']}</b></td>
-								<td><b>{$t_all['opu']}</b></td>
-								<td><b>{$t_all['ore']}</b></td>
-								<td><b>{$t_all['riv']}</b></td>
-								<td><b>{$t_all['vis']}</b></td>
-								<td><b>{$t_all['stu']}</b></td>
+								<td>{$t_all['lib']}</td>
+								<td>{$t_all['opu']}</td>
+								<td>{$t_all['ore']}</td>
+								<td>{$t_all['riv']}</td>
+								<td>{$t_all['vis']}</td>
+								<td>{$t_all['stu']}</td>
 							</tr>
 EOD;
 					
@@ -112,7 +112,7 @@ EOD;
 	$msg
 	
 	<div class="panel panel-default">
-	 	 <div class="panel-heading"><b>Informazioni Proclamatore</div>
+	 	 <div class="panel-heading"><b>Informazioni Proclamatore</b></div>
 		 <div class="panel-body">
 				<table class="table" style="font-weight:normal">
 				<tr>
