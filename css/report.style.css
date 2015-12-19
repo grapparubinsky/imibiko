@@ -98,10 +98,39 @@ table input {
 	width:80%;
 	text-align:center;
 }
-table th{
-	text-align:left;
+table th {
+		text-transform:uppercase; padding-top: 5px; padding-bottom: 4px; background-color: #555; color: #fff;
+	}
+table tr:hover {
+	background:yellow !important;
+	color:#555 !important;
 }
+.table-curved {
+   border-collapse: separate;
+   border:1px solid #ddd;
+   border-radius: 6px;
+   border-left: 0px;
+   border-top: 0px;
+}
+.table-curved > thead:first-child > tr:first-child > th {
+    border-bottom: 0px;
+    border-top: solid #ddd 1px;
+}
+.table-curved td, .table-curved th {
 
+}
+.table-curved > :first-child > :first-child > :first-child {
+    border-top-left-radius: 6px;
+}
+.table-curved > :first-child > :first-child > :last-child {
+    border-top-right-radius: 6px;
+}
+.table-curved > :last-child > :last-child > :first-child {
+    border-bottom-left-radius: 6px;
+}
+.table-curved > :last-child > :last-child > :last-child {
+    border-bottom-right-radius: 6px;
+}
 @media print
 {
   table { page-break-after:auto }

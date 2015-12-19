@@ -41,7 +41,7 @@ $p=$_GET;
 	if(!empty($_GET['gruppo_id'])) {
 		$sel_proc=mysqli_query($mysqli, "SELECT id, gruppo_id, nome, cognome, pioniere, servitore, unto, anziano FROM proclamatori WHERE gruppo_id = '{$_GET['gruppo_id']}' AND status = '0' ORDER BY cognome ASC") or die(mysqli_error($mysqli));
 	} elseif(!empty($_GET['id_p'])) {
-		$sel_proc=mysqli_query($mysqli, "SELECT id, gruppo_id, nome, cognome, pioniere, servitore, unto, anziano FROM proclamatori WHERE id = '{$_GET['id_p']}' ORDER BY cognome DESC") or die(mysqli_error($mysqli));	
+		$sel_proc=mysqli_query($mysqli, "SELECT id, gruppo_id, nome, cognome, pioniere, servitore, unto, anziano FROM proclamatori WHERE id = '{$_GET['id_p']}' AND status = '0 ORDER BY cognome DESC") or die(mysqli_error($mysqli));	
 	}
 	while($r=mysqli_fetch_assoc($sel_proc)) {
 		
@@ -72,15 +72,15 @@ $p=$_GET;
 						
 			if(empty($s)) {
 				$preinseriti=<<<EOD
-				<td><input type="number" name="lib[]" value="" min="0" placeholder="Lib"></td>
-							<td><input type="number" name="opu[]" value="" min="0" placeholder="Opu"></td>
-							<td><input type="number" step="0.15" name="ore[]" value="" min="0" placeholder="Ore"></td>
-							<td><input type="number" name="riv[]" value="" min="0" placeholder="Riv"></td>
-							<td><input type="number" name="vis[]" value="" min="0" placeholder="Vis"></td>
-							<td><input type="number" name="stu[]" value="" min="0" placeholder="Stu"></td>
-							<td><input type="text" name="note[]" value=""  placeholder="Note.."></td>
+				<td><input  class="form-control" type="number" name="lib[]" value="" min="0" placeholder="Lib"></td>
+							<td><input  class="form-control" type="number" name="opu[]" value="" min="0" placeholder="Opu"></td>
+							<td><input  class="form-control" type="number" step="0.15" name="ore[]" value="" min="0" placeholder="Ore"></td>
+							<td><input  class="form-control" type="number" name="riv[]" value="" min="0" placeholder="Riv"></td>
+							<td><input  class="form-control" type="number" name="vis[]" value="" min="0" placeholder="Vis"></td>
+							<td><input  class="form-control" type="number" name="stu[]" value="" min="0" placeholder="Stu"></td>
+							<td><input  class="form-control" type="text" name="note[]" value=""  placeholder="Note.."></td>
 							<td>
-								<select name="pioniere[]" {$pioniere['check']}>
+								<select  class="form-control" name="pioniere[]" {$pioniere['check']}>
 									<option value="0">No</option>
 									<option value="1">Si</option>
 									{$pioniere['ti']}
@@ -88,7 +88,7 @@ $p=$_GET;
 								
 							</td>
 							<td>
-								<select name="irreg[]" >
+								<select  class="form-control" name="irreg[]" >
 									<option value="0">No</option>
 									<option value="1">Si</option>
 								</select>
@@ -103,22 +103,22 @@ EOD;
 						$irreg['si']=inputcheck($s['irreg'], '1', 'selected');
 						
 						$preinseriti=<<<EOD
-						<td><input type="number" name="lib[]" value="{$s['libri']}" min="0" placeholder="Lib"></td>
-								<td><input type="number"  name="opu[]" value="{$s['opuscoli']}" min="0" placeholder="Opu"></td>
-								<td><input type="number"  step="0.15" name="ore[]" value="{$s['ore']}" min="0" placeholder="Ore"></td>
-								<td><input type="number"  name="riv[]" value="{$s['riviste']}" min="0" placeholder="Riv"></td>
-								<td><input type="number"  name="vis[]" value="{$s['visite']}" min="0" placeholder="Vis"></td>
-								<td><input type="number"  name="stu[]" value="{$s['studi']}" min="0" placeholder="Stu"></td>
-								<td><input type="text" name="note[]" value="{$s['note']}"  placeholder="Note.."></td>
+						<td><input  class="form-control" type="number" name="lib[]" value="{$s['libri']}" min="0" placeholder="Lib"></td>
+								<td><input  class="form-control" type="number"  name="opu[]" value="{$s['opuscoli']}" min="0" placeholder="Opu"></td>
+								<td><input  class="form-control" type="number"  step="0.15" name="ore[]" value="{$s['ore']}" min="0" placeholder="Ore"></td>
+								<td><input  class="form-control" type="number"  name="riv[]" value="{$s['riviste']}" min="0" placeholder="Riv"></td>
+								<td><input  class="form-control" type="number"  name="vis[]" value="{$s['visite']}" min="0" placeholder="Vis"></td>
+								<td><input  class="form-control" type="number"  name="stu[]" value="{$s['studi']}" min="0" placeholder="Stu"></td>
+								<td><input  class="form-control" type="text" name="note[]" value="{$s['note']}"  placeholder="Note.."></td>
 								<td>
-									<select name="pioniere[]" {$pioniere['check']}>
+									<select  class="form-control" name="pioniere[]" {$pioniere['check']}>
 										<option value="0" {$pioniere['no']}>No</option>
 										<option value="1" {$pioniere['si']}>Si</option>
 										{$pioniere['ti']}
 									</select>
 								</td>
 								<td>
-									<select name="irreg[]">
+									<select class="form-control"  name="irreg[]">
 										<option value="0" {$irreg['no']}>No</option>
 										<option value="1" {$irreg['si']}>Si</option>
 									</select>
@@ -146,7 +146,7 @@ EOD;
 
 	echo $Content=<<<EOD
 	<form id="grigliainsert" onchange="return UpdateRecord();">
-	<table style="table-layout:fixed; width:100%" cellspacing="10">
+	<table class="table table-condensed table-curved" style="table-layout:fixed; width:100%" cellspacing="10">
 		<tr>
 			<th width="25">ID</th>
 			<th width="180">Proclamatore</th>

@@ -7,7 +7,7 @@ include('include/general.php');
 include('include/functions.php');
 
 if(!empty($_GET['id'])) {
-   $del=mysqli_query($mysqli, "DELETE FROM proclamatori WHERE id = '{$_GET['id']}'") or die(mysqli_error($mysqli));
+   $del=mysqli_query($mysqli, "UPDATE proclamatori SET status = 1 WHERE id = '{$_GET['id']}'") or die(mysqli_error($mysqli));
    $r=mysqli_fetch_assoc($del);
   	$del2=mysqli_query($mysqli, "DELETE FROM contatti WHERE id_p = '{$_GET['id']}'") or die(mysqli_error($mysqli));
 	   $r2=mysqli_fetch_assoc($del2);

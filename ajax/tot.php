@@ -10,12 +10,17 @@ if (!empty($_GET['mese'])) {
 
 	
 	/* fai il controllo rapporti mancanti */
+	$msg_content="";
+	$all_proc=mysqli_query($mysqli, "SELECT id, nome, cognome FROM proclamatori LEFT JOIN gruppi ON gruppi.id = proclamatori.gruppo_id WHERE status = 0");
+	while ($check = mysqli_fetch_object($all_proc)) {
+		$check_month_vs_proc=mysqli_query($mysqli, "SELECT * FROM `proclamatori` AS p LEFT JOIN reports AS r ON p.id = r.id_p WHERE r.id_p = {$check->id} AND (r.mese = {$_GET['mese']} AND r.anno = {$_GET['anno']})");		
+		$res_check=mysqli_fetch_object($check_month_vs_proc);
+		if(empty($res_check)) $msg_content.= "<b>{$check->nome} {$check->cognome}</b> -> gruppo {$check->nome_gruppo}";
+	}
 	
-	$rap_man_q=mysqli_query($mysqli, "SELECT COUNT(id) AS pid FROM proclamatori");
-	$rman=mysqli_fetch_assoc($rap_man_q);
-	
-	
-	
+	if(!empty($msg_content)) {
+		$msg="<div class='printhidden'>$msg_content</div>"; 
+	}
 	
 	
 	$table="";
@@ -178,13 +183,10 @@ EOD;
 				WHERE mese = '{$_GET['mese']}' 
 					AND anno = '{$_GET['anno']}'");
 					
-					while($t_all=mysqli_fetch_assoc($tot_all)) {
-						if(($rman['pid']) !== ($t_all['n'])) {
-							$diff=($rman['pid'])-($t_all['n']);
-							$msg="<div class='printhidden'>Rapporti mancanti: $diff. Non considerare i nuovi proclamatori aggiunti.</div>"; 
-						} else {$msg="";}
+					$t_all=mysqli_fetch_assoc($tot_all);
+					
 						$table_tot.=<<<EOD
-							<tr>
+							<tr style="background:#26AA4E;color:#fff">
 								<td><b>Totale</b></td>
 								<td><b>{$t_all['n']}</b></td>
 								<td><b>{$t_all['lib']}</b></td>
@@ -195,7 +197,7 @@ EOD;
 								<td><b>{$t_all['stu']}</b></td>
 							</tr>
 EOD;
-					}
+					
 					
 	
 			
@@ -203,23 +205,18 @@ EOD;
 		
 	<style>
 	table {
-		table-layout:fixed; border-collapse: collapse; width:100%; border: 1px solid #98bf21; margin:2em auto;
+		table-layout:fixed; width:100%;background:#eee; border:1px solid #ddd;
 	}
 	td {
-		font-size: 1.2em; border: 1px solid #98bf21; padding: 3px 7px 2px 7px;
+		font-size: 1.2em;
 }
 	th {
-		padding-top: 5px; padding-bottom: 4px; background-color: #A7C942; color: #000;
-	}
-	tr:nth-child(odd)		{ background-color:#eee; }
-	tr:nth-child(even)		{ background-color:#ededed; }
-	tr:hover {
-		background:#FFF;
+		text-transform:uppercase; padding-top: 5px; padding-bottom: 4px; background-color: #555; color: #fff;
 	}
 	</style>	
-	<h3>Rapporto Congregazione ({$_GET['mese']}/{$_GET['anno']})</h3>
+	<h2>Rapporto Congregazione ({$_GET['mese']}/{$_GET['anno']})</h2>
 	$msg
-	<table cellspacing="10">
+	<table class="table table-striped table-curved">
 		<tr>
 			<th width="180"></th>
 			<th>N.</th>
@@ -232,8 +229,9 @@ EOD;
 		</tr>
 			$table_tot
 	</table>
-
-	<table style="table-layout:fixed; width:100%" cellspacing="10">
+	<h2>Dettaglio Rapporto</h2>
+	
+	<table class="table table-striped table-curved">
 		<tr>
 			<th width="180">Proclamatore</th>
 			<th>Lib.</th>

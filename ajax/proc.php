@@ -4,7 +4,7 @@ if (isset($_REQUEST['json']))
 	{
 		header("Content-Type: application/json");
 		if(isset($_GET['nominati'])) {
-		$sql_res=mysqli_query($mysqli, "SELECT id, nome, cognome, anziano, servitore FROM proclamatori WHERE anziano = '1' OR servitore = '1' AND nome LIKE '%{$_GET['nominati']}%' ORDER BY nome DESC");
+		$sql_res=mysqli_query($mysqli, "SELECT id, nome, cognome, anziano, servitore FROM proclamatori WHERE status = 0 AND (anziano = '1' OR servitore = '1') AND nome LIKE '%{$_GET['nominati']}%' ORDER BY nome DESC");
 			while($row=mysqli_fetch_array($sql_res)) {
 			  $value[]=$row['nome'].' '.$row['cognome'];
 			  $id[]=$row['id'];
@@ -17,7 +17,7 @@ if (isset($_REQUEST['json']))
 			  $id[]=$row['id'];
 		  }
 		} elseif(isset($_GET['proclamatore'])) {
-		$sql_res=mysqli_query($mysqli, "SELECT id, nome, cognome FROM proclamatori WHERE nome LIKE '%{$_GET['proclamatore']}%' OR cognome LIKE '%{$_GET['proclamatore']}%'");
+		$sql_res=mysqli_query($mysqli, "SELECT id, nome, cognome FROM proclamatori WHERE status = 0 AND (nome LIKE '%{$_GET['proclamatore']}%' OR cognome LIKE '%{$_GET['proclamatore']}%')");
 			while($row=mysqli_fetch_array($sql_res)) {
 			   $value[]=$row['nome'].' '.$row['cognome'];
 			  $id[]=$row['id'];
