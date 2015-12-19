@@ -62,12 +62,18 @@ if(!isset($_POST['nome']) && !empty($_GET['id'])) {
 	  <label for="address">Indirizzo</label>
 	  <input id="address" name="address" value="{$r['address']}">
 	  </br>
+          <label for="email">Email</label>
+          <input id="email" name="email" value="{$r['email']}">
+	  <br>
 	  <label for="n_casa">Numero di casa</label>
 	  <input id="n_casa" name="n_casa" value="{$r['n_casa']}">
 	  </br>
 	  <label for="n_cell">Numero di cell.</label>
 	  <input id="n_cell" name="n_cell" value="{$r['n_cell']}">
 	  </br>
+          <label for="note">Note</label>
+          <input id="note" name="note" value="{$r['note']}">
+
 	</section>
 	<section>
       	<h3>Gruppo di servizio</h3>
@@ -109,9 +115,11 @@ EOD;
       
   $edit_cont=mysqli_query($mysqli, "UPDATE contatti 
       SET comune		= '{$_POST['comune']}', 
-	  address			= '{$_POST['address']}', 
+	  address			= '{$_POST['address']}',
+	  email				= '{$_POST['email']}', 
 	  n_casa			= '{$_POST['n_casa']}', 
-	  n_cell			= '{$_POST['n_cell']}'
+	  n_cell			= '{$_POST['n_cell']}',
+	  note				= '{$_POST['note']}'
       WHERE id_p		= '{$_POST['idp']}'") or die(mysqli_error($mysqli));
 	
 

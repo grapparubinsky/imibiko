@@ -8,7 +8,7 @@ $_js="\$";
 
 if (!empty($_GET['id_p'])) {
 
-	$anno_minus_one = $_GET['anno']-1;
+	$anno_plus_one = $_GET['anno']+1;
 	
 	$proclamatore=mysqli_query($mysqli, "SELECT * FROM proclamatori INNER JOIN contatti ON contatti.id_p = proclamatori.id WHERE proclamatori.id = {$_GET['id_p']}");
 	$proclamatore=mysqli_fetch_object($proclamatore);
@@ -21,8 +21,8 @@ if (!empty($_GET['id_p'])) {
 		FROM reports AS r 
 		LEFT JOIN proclamatori AS p 
 			ON r.id_p = p.id 
-		WHERE (r.mese >= 9 AND r.anno = '{$anno_minus_one}' AND r.id_p = {$_GET['id_p']}) 
-						OR (r.mese < 9 AND r.anno = '{$_GET['anno']}' AND r.id_p = {$_GET['id_p']}) 
+		WHERE (r.mese >= 9 AND r.anno = '{$_GET['anno']}' AND r.id_p = {$_GET['id_p']}) 
+						OR (r.mese < 9 AND r.anno = '{$anno_plus_one}' AND r.id_p = {$_GET['id_p']}) 
 		ORDER BY anno, mese+1 ASC");
 
 
@@ -75,8 +75,8 @@ EOD;
 				$tot_all=mysqli_query($mysqli, 
 				"SELECT SUM(libri) AS lib, SUM(opuscoli) AS opu, SUM(ore) AS ore, SUM(riviste) AS riv, SUM(visite) AS vis, SUM(studi) AS stu
 				FROM reports
-				WHERE (mese > 9 AND anno = '{$anno_minus_one}'  AND id_p = {$_GET['id_p']}) 
-						OR (mese < 9 AND anno = '{$_GET['anno']}' AND id_p = {$_GET['id_p']})");
+				WHERE (mese > 9 AND anno = '{$_GET['anno']}'  AND id_p = {$_GET['id_p']}) 
+						OR (mese < 9 AND anno = '{$anno_plus_one}' AND id_p = {$_GET['id_p']})");
 					 
 					$t_all=mysqli_fetch_assoc($tot_all);
 					
