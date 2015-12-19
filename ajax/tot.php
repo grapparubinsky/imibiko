@@ -192,13 +192,14 @@ EOD;
 						$table_tot.=<<<EOD
 							<tr style="background:#26AA4E;color:#fff">
 								<td><b>Totale</b></td>
-								<td><b>{$t_all['n']}</b></td>
-								<td><b>{$t_all['lib']}</b></td>
-								<td><b>{$t_all['opu']}</b></td>
+								<td>{$t_all['n']}</td>
+								<td>{$t_all['lib']}</td>
+								<td>{$t_all['opu']}</td>
 								<td><b>{$t_all['ore']}</b></td>
-								<td><b>{$t_all['riv']}</b></td>
-								<td><b>{$t_all['vis']}</b></td>
-								<td><b>{$t_all['stu']}</b></td>
+								<td>{$t_all['riv']}</td>
+								<td>{$t_all['vis']}</td>
+								<td>{$t_all['stu']}</td>
+
 							</tr>
 EOD;
 					
