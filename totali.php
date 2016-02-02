@@ -7,13 +7,7 @@ include('include/general.php');
 include('include/functions.php');
 $_js="\$";
 if(!isset($_POST['id'])) {
- date_default_timezone_set('Europe/Rome');
- $currentYear = date('Y');
- $yearoption="";
-        foreach (range($currentYear-1, $currentYear+3) as $value) {
-        	if($value==$currentYear) $yearselected="selected"; else $yearselected="";
-           $yearoption.= "<option value='$value' $yearselected>{$value}</option>";
-        }
+
   $Body=<<<EOD
     <div id="content-wrapper">
 	      <section id="filtra">
@@ -22,30 +16,18 @@ if(!isset($_POST['id'])) {
 		  	<div class="row">
 			  	<div class="form-group col-md-4">
 				  	<label for="mese">Mese</label>
-				  	<select class="form-control" name="mese">
-				  		<option value="">---</option>
-				  		<option value="1">Gennaio</option>
-				  		<option value="2">Febbraio</option>
-				  		<option value="3">Marzo</option>
-				  		<option value="4">Aprile</option>
-				  		<option value="5">Maggio</option>
-				  		<option value="6">Giugno</option>
-				  		<option value="7">Luglio</option>
-				  		<option value="8">Agosto</option>
-				  		<option value="9">Settembre</option>
-				  		<option value="10">Ottobre</option>
-				  		<option value="11">Novembre</option>
-				  		<option value="12">Dicembre</option>
+				  	<select class="form-control" name="month">
+				  		{$fn(get_months_select_options())}
 				  	</select>
 			  	</div>
 			  	<div class="form-group col-md-4">
 			  		<label for="anno">Anno </label>
-				  	<select id="anno" class="form-control" name="anno">
-				  		$yearoption
+				  	<select id="anno" class="form-control" name="year">
+				  		{$fn(get_years_select_options())}
 				  	</select>
 				</div>
-				 <div class="form-group col-md-4">
-			    	<br>
+				<div class="form-group col-md-4">
+				  <br>
 			    	<input class="btn btn-success btn-lg" type="button" onclick="return submitForm();" value="Filtra">
 			    </div>
 			</div> <!-- /div .row -->

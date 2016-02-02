@@ -6,82 +6,79 @@ include('../include/functions.php');
 //echo '</pre>';
 $_js="\$";
 
-if (!empty($_GET['mese'])) {
+if(request_ifsetnotnull('month') && request_ifsetnotnull('year')){
 
-	
-	/* fai il controllo rapporti mancanti */
-	$msg_content="";
-	$all_proc=mysqli_query($mysqli, "SELECT p.id, p.nome, p.cognome, g.nome_gruppo FROM proclamatori AS p LEFT JOIN gruppi AS g ON g.id = p.gruppo_id WHERE p.status = 0");
-	while ($check = mysqli_fetch_object($all_proc)) {
-		$check_month_vs_proc=mysqli_query($mysqli, "SELECT * FROM `proclamatori` AS p LEFT JOIN reports AS r ON p.id = r.id_p WHERE r.id_p = {$check->id} AND (r.mese = {$_GET['mese']} AND r.anno = {$_GET['anno']})");		
-	
-	$res_check=mysqli_fetch_object($check_month_vs_proc);
-		if(empty($res_check)) $msg_content.= "<li>Rapporto mancante: <b>{$check->nome} {$check->cognome}</b> -> gruppo {$check->nome_gruppo}";
-	}
-	
-$msg = <<<EOD
- <div class="alert alert-danger fade in printhidden">
-    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-    <strong>Attenzione!</strong> {$msg_content}
-  </div>
+  $msg_content = '';
+  $msg='';
+  $table='';
+  $month = request_ifset('month');
+  $year	 = request_ifset('year');
+
+$HandleReports = new HandleReports();
+  
+  if($HandleReports->get_missing_reports()) 
+      $msg_content.= $HandleReports->get_missing_reports();
+      
+  if($msg_content) { 
+  
+  $msg = <<<EOD
+  <div class="alert alert-danger fade in printhidden">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      <strong>Attenzione!</strong> {$msg_content}
+    </div>
 EOD;
-	
+
+}
 	
 	$table="";
-		$sel_rap=mysqli_query($mysqli, 
-		"SELECT p.nome, p.cognome, r.libri, r.opuscoli, r.ore, r.riviste, r.visite, r.studi, r.note, r.pioniere, r.irreg
-		FROM reports AS r 
-		LEFT JOIN proclamatori AS p 
-			ON r.id_p = p.id 
-		WHERE mese = '{$_GET['mese']}' 
-			AND anno = '{$_GET['anno']}' 
-		ORDER BY cognome ASC");
-		if(mysqli_num_rows($sel_rap) !== 0) {
-				
-			while ($s=mysqli_fetch_assoc($sel_rap)) {
-				
-				switch ($s['pioniere']) {
-					case '0':
-						$pioniere="-";
-						break;
-					case '1':
-						$pioniere="Aus.";
-						break;
-					case '2':
-						$pioniere="T.I";
-						break;
-					case '3':
-						$pioniere="Reg.";
-						break;
-					case '4':
-						$pioniere="Spec.";
-				}
-				
-				if($s['irreg'] == '1') $irreg="<b>Irreg.</b>"; else $irreg = "-";
-				
-			$table.=<<<EOD
-							<tr>
-								<td>{$s['nome']} {$s['cognome']}</td>
-								<td>{$s['libri']}</td>
-								<td>{$s['opuscoli']}</td>
-								<td><b>{$s['ore']}</b></td>
-								<td>{$s['riviste']}</td>
-								<td>{$s['visite']}</td>
-								<td>{$s['studi']}</td>
-								<td>{$s['note']}</td>
-								<td>$pioniere</td>
-								<td>$irreg</td>
-							</tr>
+	
+	$whole_reports = $HandleReports->get_reports();
+	//print_r($whole_reports);die;
+	
+	   foreach($whole_reports as $row) {
+
+		switch ($row->pioniere) {
+		  case '0':
+		    $pioniere="-";
+		  break;
+		  case '1':
+		    $pioniere="Aus.";
+		  break;
+		  case '2':
+		    $pioniere="T.I";
+		  break;
+		  case '3':
+		    $pioniere="Reg.";
+		  break;
+		  case '4':
+		    $pioniere="Spec.";
+		  break;
+		}
+
+		if($row->irreg == '1') $irreg="<b>Irreg.</b>"; else $irreg = "-";
+
+		$table.=<<<EOD
+		<tr>
+		  <td>{$row->nome} {$row->cognome}</td>
+		  <td>{$row->pubb}</td>
+		  <td>{$row->video}</td>
+		  <td>{$row->ore}</b></td>
+		  <td>{$row->visite}</td>
+		  <td>{$row->studi}</td>
+		  <td>{$row->note}</td>
+		  <td>$pioniere</td>
+		  <td>$irreg</td>
+		</tr>
 EOD;
-			}
-			
-			// proclamatori, pionieri ausiliari, pionieri regolari, numero proclamatori
-			
-			$tot_rap_proc=mysqli_query($mysqli, 
-				"SELECT SUM(libri) AS lib, SUM(opuscoli) AS opu, SUM(ore) AS ore, SUM(riviste) AS riv, SUM(visite) AS vis, SUM(studi) AS stu, COUNT(id) AS n
+	  }
+	
+	
+	// proclamatori, pionieri ausiliari, pionieri regolari, numero proclamatori
+
+	$tot_rap_proc=mysqli_query($mysqli, 
+				"SELECT SUM(pubb) AS pubb, SUM(video) AS video, SUM(ore) AS ore, SUM(visite) AS vis, SUM(studi) AS stu, COUNT(id) AS n
 				FROM reports
-				WHERE mese = '{$_GET['mese']}' 
-					AND anno = '{$_GET['anno']}' 
+				WHERE ts_report = '{$HandleReports->ts_report}' 
 					AND pioniere = '0'
 					AND irreg = '0'");
 					
@@ -91,20 +88,19 @@ EOD;
 							<tr>
 								<td>Proclamatori</td>
 								<td>{$t_proc['n']}</td>
-								<td>{$t_proc['lib']}</td>
-								<td>{$t_proc['opu']}</td>
+								<td>{$t_proc['pubb']}</td>
+								<td>{$t_proc['video']}</td>
 								<td>{$t_proc['ore']}</td>
-								<td>{$t_proc['riv']}</td>
 								<td>{$t_proc['vis']}</td>
 								<td>{$t_proc['stu']}</td>
 							</tr>
 EOD;
 					}
+					
 			$tot_rap_aus=mysqli_query($mysqli, 
-				"SELECT SUM(libri) AS lib, SUM(opuscoli) AS opu, SUM(ore) AS ore, SUM(riviste) AS riv, SUM(visite) AS vis, SUM(studi) AS stu, COUNT(id) AS n
+				"SELECT SUM(pubb) AS pubb, SUM(video) AS video, SUM(ore) AS ore, SUM(visite) AS vis, SUM(studi) AS stu, COUNT(id) AS n
 				FROM reports
-				WHERE mese = '{$_GET['mese']}' 
-					AND anno = '{$_GET['anno']}' 
+				WHERE ts_report = '{$HandleReports->ts_report}' 
 					AND (pioniere = '1' OR pioniere = '2')");
 					
 					while($t_aus=mysqli_fetch_assoc($tot_rap_aus)) {
@@ -112,10 +108,9 @@ EOD;
 							<tr>
 								<td>Pion. Ausiliari</td>
 								<td>{$t_aus['n']}</td>
-								<td>{$t_aus['lib']}</td>
-								<td>{$t_aus['opu']}</td>
+								<td>{$t_aus['pubb']}</td>
+								<td>{$t_aus['video']}</td>
 								<td>{$t_aus['ore']}</td>
-								<td>{$t_aus['riv']}</td>
 								<td>{$t_aus['vis']}</td>
 								<td>{$t_aus['stu']}</td>
 							</tr>
@@ -123,10 +118,9 @@ EOD;
 					}
 					
 			$tot_pion_reg=mysqli_query($mysqli, 
-				"SELECT SUM(libri) AS lib, SUM(opuscoli) AS opu, SUM(ore) AS ore, SUM(riviste) AS riv, SUM(visite) AS vis, SUM(studi) AS stu, COUNT(id) AS n
+				"SELECT SUM(pubb) AS pubb, SUM(video) AS video, SUM(ore) AS ore, SUM(visite) AS vis, SUM(studi) AS stu, COUNT(id) AS n
 				FROM reports
-				WHERE mese = '{$_GET['mese']}' 
-					AND anno = '{$_GET['anno']}' 
+				WHERE ts_report = '{$HandleReports->ts_report}' 
 					AND pioniere = '3'");
 					
 					while($t_reg=mysqli_fetch_assoc($tot_pion_reg)) {
@@ -134,20 +128,18 @@ EOD;
 							<tr>
 								<td>Pion. Regolari</td>
 								<td>{$t_reg['n']}</td>
-								<td>{$t_reg['lib']}</td>
-								<td>{$t_reg['opu']}</td>
+								<td>{$t_reg['pubb']}</td>
+								<td>{$t_reg['video']}</td>
 								<td>{$t_reg['ore']}</td>
-								<td>{$t_reg['riv']}</td>
 								<td>{$t_reg['vis']}</td>
 								<td>{$t_reg['stu']}</td>
 							</tr>
 EOD;
 					}
 				$tot_pion_spec=mysqli_query($mysqli, 
-				"SELECT SUM(libri) AS lib, SUM(opuscoli) AS opu, SUM(ore) AS ore, SUM(riviste) AS riv, SUM(visite) AS vis, SUM(studi) AS stu, COUNT(id) AS n
+				"SELECT SUM(pubb) AS pubb, SUM(video) AS video, SUM(ore) AS ore, SUM(visite) AS vis, SUM(studi) AS stu, COUNT(id) AS n
 				FROM reports
-				WHERE mese = '{$_GET['mese']}' 
-					AND anno = '{$_GET['anno']}' 
+				WHERE ts_report = '{$HandleReports->ts_report}' 
 					AND pioniere = '4'");
 					
 					while($t_spec=mysqli_fetch_assoc($tot_pion_spec)) {
@@ -155,10 +147,9 @@ EOD;
 							<tr>
 								<td>Pion. Speciali</td>
 								<td>{$t_spec['n']}</td>
-								<td>{$t_spec['lib']}</td>
-								<td>{$t_spec['opu']}</td>
+								<td>{$t_spec['pubb']}</td>
+								<td>{$t_spec['video']}</td>
 								<td>{$t_spec['ore']}</td>
-								<td>{$t_spec['riv']}</td>
 								<td>{$t_spec['vis']}</td>
 								<td>{$t_spec['stu']}</td>
 							</tr>
@@ -176,16 +167,14 @@ EOD;
 								<td></td>
 								<td></td>
 								<td></td>
-								<td></td>
 								
 							</tr>
 EOD;
 				
 				$tot_all=mysqli_query($mysqli, 
-				"SELECT SUM(libri) AS lib, SUM(opuscoli) AS opu, SUM(ore) AS ore, SUM(riviste) AS riv, SUM(visite) AS vis, SUM(studi) AS stu, COUNT(id) AS n
+				"SELECT SUM(pubb) AS pubb, SUM(video) AS video, SUM(ore) AS ore, SUM(visite) AS vis, SUM(studi) AS stu, COUNT(id) AS n
 				FROM reports
-				WHERE mese = '{$_GET['mese']}' 
-					AND anno = '{$_GET['anno']}'");
+				WHERE ts_report = '{$HandleReports->ts_report}'");
 					
 					$t_all=mysqli_fetch_assoc($tot_all);
 					
@@ -193,10 +182,9 @@ EOD;
 							<tr style="background:#26AA4E;color:#fff">
 								<td><b>Totale</b></td>
 								<td>{$t_all['n']}</td>
-								<td>{$t_all['lib']}</td>
-								<td>{$t_all['opu']}</td>
-								<td><b>{$t_all['ore']}</b></td>
-								<td>{$t_all['riv']}</td>
+								<td>{$t_all['pubb']}</td>
+								<td>{$t_all['video']}</td>
+								<td>{$t_all['ore']}</td>
 								<td>{$t_all['vis']}</td>
 								<td>{$t_all['stu']}</td>
 
@@ -219,16 +207,15 @@ EOD;
 		text-transform:uppercase; padding-top: 5px; padding-bottom: 4px; background-color: #555; color: #fff;
 	}
 	</style>	
-	<h2>Rapporto Congregazione ({$_GET['mese']}/{$_GET['anno']})</h2>
+	<h2>Rapporto Congregazione ($month/$year)</h2>
 	$msg
 	<table class="table table-striped table-curved">
 		<tr>
 			<th width="180"></th>
 			<th>N.</th>
-			<th>Lib.</th>
-			<th>Opu.</th>
+			<th>Pubb.</th>
+			<th>Video</th>
 			<th>Ore</th>
-			<th>Riv.</th>
 			<th>Vis.</th>
 			<th>Stu.</th>
 		</tr>
@@ -239,10 +226,9 @@ EOD;
 	<table class="table table-striped table-curved">
 		<tr>
 			<th width="180">Proclamatore</th>
-			<th>Lib.</th>
-			<th>Opu.</th>
+			<th>Pubb.</th>
+			<th>Video</th>
 			<th>Ore</th>
-			<th>Riv.</th>
 			<th>Vis.</th>
 			<th>Stu.</th>
 			<th width="200">Note</th>
@@ -252,9 +238,6 @@ EOD;
 			$table
 	</table>
 EOD;
-	} else {
-		echo 'Rapporti non ancora compilati per questo mese.';
-	}
 
 } else {
 	echo '<i>Seleziona sopra una data.</i>';
