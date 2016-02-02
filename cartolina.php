@@ -23,7 +23,7 @@ if(!isset($_POST['id'])) {
 					 <div class="form-group col-md-4">
 					    <label for="proclamtore">Proclamatore</label>
 				    	<input  class="form-control" id="proclamatore" name="nome_proclamatore" type="text" value="">
-				    	<input class="form-control" type="hidden" id="id_p" name="id_p" value="">
+				    	<input class="form-control" type="hidden" id="proc_id" name="proc_id" value="">
 					 </div>
 					
 		   	 	</div> <!-- /div .row -->
@@ -64,7 +64,7 @@ if(!isset($_POST['id'])) {
 		script:"ajax/proc.php?json=true&",
 		varname:"proclamatore",
 		json:true,
-		callback: function (obj) { document.getElementById('id_p').value = obj.id; }
+		callback: function (obj) { document.getElementById('proc_id').value = obj.id; }
 	};
 	var as_json = new AutoSuggest('proclamatore', options2);
 

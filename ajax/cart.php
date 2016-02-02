@@ -6,25 +6,34 @@ include('../include/functions.php');
 //echo '</pre>';
 $_js="\$";
 
-if (!empty($_GET['id_p'])) {
+if (request_ifsetnotnull('proc_id')) {
 
-	$anno_plus_one = $_GET['anno']+1;
+	$anno 			= request_ifset('anno', 1);
+	$anno_plus_one 		= $anno+1;
+	$anno_minus_one 	= $anno-1;
 	
-	$proclamatore=mysqli_query($mysqli, "SELECT * FROM proclamatori INNER JOIN contatti ON contatti.id_p = proclamatori.id WHERE proclamatori.id = {$_GET['id_p']}");
-	$proclamatore=mysqli_fetch_object($proclamatore);
+	$anno_minus_one_ts 	= year_month_to_ts('09', $anno_minus_one);
+	$anno_plus_one_ts 	= year_month_to_ts('09', $anno_plus_one);
+	$anno_ts 		= year_month_to_ts('09', $anno);
 	
+	$ts_cond_array		= array('start_ts'=>$anno_minus_one_ts,'end_ts'=>$anno_ts);
 	
+	$HandleReports = new HandleReports(FALSE, 1);
 	
+	$proc_info = $HandleReports->get_proc_ext_info(request_ifset('proc_id'));
+	$proclamatore = $proc = array2object($proc_info[0]);
+		
+	//$reports = $HandleReports->get_reports('proc', $proc->id, $ts_cond_array);
+
 	$table="";
 		$sel_rap=mysqli_query($mysqli, 
-		"SELECT p.nome, p.cognome, r.mese, r.anno, r.libri, r.opuscoli, r.ore, r.riviste, r.visite, r.studi, r.note, r.pioniere, r.irreg
+		"SELECT *
 		FROM reports AS r 
 		LEFT JOIN proclamatori AS p 
 			ON r.id_p = p.id 
-		WHERE (r.mese >= 9 AND r.anno = '{$_GET['anno']}' AND r.id_p = {$_GET['id_p']}) 
-						OR (r.mese < 9 AND r.anno = '{$anno_plus_one}' AND r.id_p = {$_GET['id_p']}) 
-		ORDER BY anno, mese+1 ASC");
-
+		WHERE (r.ts_report >= $anno_minus_one_ts AND r.ts_report < $anno_ts)
+		AND p.id = {$proc->id}
+		ORDER BY r.ts_report ASC");
 
 
 		if(mysqli_num_rows($sel_rap) !== 0) {
@@ -51,16 +60,15 @@ if (!empty($_GET['id_p'])) {
 				if($s['irreg'] == '1') $irreg="<b>Irreg.</b>"; else $irreg = "-";
 				
 				//CONVERTI DATA FORMATO TESTUALE
-				$dateObj = DateTime::createFromFormat('n-Y', "{$s['mese']}-{$s['anno']}");
+				$dateObj = DateTime::createFromFormat('U', $s['ts_report']);
 				$mese_anno = $dateObj->format('F Y');
 				
 			$table.=<<<EOD
 							<tr>
 								<td>$mese_anno</td>
-								<td>{$s['libri']}</td>
-								<td>{$s['opuscoli']}</td>
+								<td>{$s['pubb']}</td>
+								<td>{$s['video']}</td>
 								<td><b>{$s['ore']}</b></td>
-								<td>{$s['riviste']}</td>
 								<td>{$s['visite']}</td>
 								<td>{$s['studi']}</td>
 								<td>{$s['note']}</td>
@@ -73,20 +81,20 @@ EOD;
 			
 			
 				$tot_all=mysqli_query($mysqli, 
-				"SELECT SUM(libri) AS lib, SUM(opuscoli) AS opu, SUM(ore) AS ore, SUM(riviste) AS riv, SUM(visite) AS vis, SUM(studi) AS stu
+				"SELECT SUM(pubb) AS pubb, SUM(video) AS video, SUM(ore) AS ore, SUM(visite) AS vis, SUM(studi) AS stu
 				FROM reports
-				WHERE (mese > 9 AND anno = '{$_GET['anno']}'  AND id_p = {$_GET['id_p']}) 
-						OR (mese < 9 AND anno = '{$anno_plus_one}' AND id_p = {$_GET['id_p']})");
-					 
-					$t_all=mysqli_fetch_assoc($tot_all);
+				WHERE (ts_report >= $anno_minus_one_ts AND ts_report < $anno_ts)
+				  AND id_p = {$proc->id}");
+				
+				
+				$t_all=mysqli_fetch_assoc($tot_all);
 					
 						$table_tot.=<<<EOD
 							<tr style="background:#26AA4E;color:#fff">
 								<td><b>Totale anno teocratico</b></td>
-								<td>{$t_all['lib']}</td>
-								<td>{$t_all['opu']}</td>
+								<td>{$t_all['pubb']}</td>
+								<td>{$t_all['video']}</td>
 								<td>{$t_all['ore']}</td>
-								<td>{$t_all['riv']}</td>
 								<td>{$t_all['vis']}</td>
 								<td>{$t_all['stu']}</td>
 							</tr>
@@ -108,7 +116,7 @@ EOD;
 		text-transform:uppercase; padding-top: 5px; padding-bottom: 4px; background-color: #555; color: #fff;
 	}
 	</style>	
-	<h2>Rapporto: {$proclamatore->nome} {$proclamatore->cognome} (9/$anno_minus_one - 9/{$_GET['anno']})</h2>
+	<h2>Rapporto: {$proclamatore->nome} {$proclamatore->cognome} (9/$anno_minus_one - 8/{$anno})</h2>
 	$msg
 	
 	<div class="panel panel-default">
@@ -140,10 +148,9 @@ EOD;
 	<table class="table table-striped table-curved">
 		<tr>
 			<th width="180">Proclamatore</th>
-			<th>Lib.</th>
-			<th>Opu.</th>
+			<th>Pubb.</th>
+			<th>Video</th>
 			<th>Ore</th>
-			<th>Riv.</th>
 			<th>Vis.</th>
 			<th>Stu.</th>
 			<th width="200">Note</th>
@@ -158,10 +165,9 @@ EOD;
 	<table class="table table-striped table-curved">
 		<tr>
 			<th width="250"></th>
-			<th>Lib.</th>
-			<th>Opu.</th>
+			<th>Pubb.</th>
+			<th>Video</th>
 			<th>Ore</th>
-			<th>Riv.</th>
 			<th>Vis.</th>
 			<th>Stu.</th>
 		</tr>

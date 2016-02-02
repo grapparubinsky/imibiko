@@ -41,7 +41,7 @@ if($method == 'insert') {
 	      // for each proc do this..
 	
 		$proc = array2object($proc);
-	
+	  
 		switch($proc->pioniere) {
 			case '2':
 				$pioniere['check']='';
