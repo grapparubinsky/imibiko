@@ -19,85 +19,69 @@ if (request_ifsetnotnull('proc_id')) {
 	$ts_cond_array		= array('start_ts'=>$anno_minus_one_ts,'end_ts'=>$anno_ts);
 	
 	$HandleReports = new HandleReports(FALSE, 1);
-	
 	$proc_info = $HandleReports->get_proc_ext_info(request_ifset('proc_id'));
 	$proclamatore = $proc = array2object($proc_info[0]);
 		
-	//$reports = $HandleReports->get_reports('proc', $proc->id, $ts_cond_array);
-
-	$table="";
-		$sel_rap=mysqli_query($mysqli, 
-		"SELECT *
-		FROM reports AS r 
-		LEFT JOIN proclamatori AS p 
-			ON r.id_p = p.id 
-		WHERE (r.ts_report >= $anno_minus_one_ts AND r.ts_report < $anno_ts)
-		AND p.id = {$proc->id}
-		ORDER BY r.ts_report ASC");
-
-
-		if(mysqli_num_rows($sel_rap) !== 0) {
+	$reports = $HandleReports->get_reports('proc', $proc->id, $ts_cond_array, 1);
+	$reports = array2object($reports);
+	
+	foreach($reports as $r) {
+	  
 				
-			while ($s=mysqli_fetch_assoc($sel_rap)) {
-				
-				switch ($s['pioniere']) {
-					case '0':
-						$pioniere="-";
-						break;
-					case '1':
-						$pioniere="Aus.";
-						break;
-					case '2':
-						$pioniere="T.I";
-						break;
-					case '3':
-						$pioniere="Reg.";
-						break;
-					case '4':
-						$pioniere="Spec.";
-				}
-				
-				if($s['irreg'] == '1') $irreg="<b>Irreg.</b>"; else $irreg = "-";
-				
-				//CONVERTI DATA FORMATO TESTUALE
-				$dateObj = DateTime::createFromFormat('U', $s['ts_report']);
-				$mese_anno = $dateObj->format('F Y');
-				
-			$table.=<<<EOD
-							<tr>
-								<td>$mese_anno</td>
-								<td>{$s['pubb']}</td>
-								<td>{$s['video']}</td>
-								<td><b>{$s['ore']}</b></td>
-								<td>{$s['visite']}</td>
-								<td>{$s['studi']}</td>
-								<td>{$s['note']}</td>
-								<td>$pioniere</td>
-								<td>$irreg</td>
-							</tr>
+	    switch ($r->pioniere) {
+		    case '0':
+			    $pioniere="-";
+			    break;
+		    case '1':
+			    $pioniere="Aus.";
+			    break;
+		    case '2':
+			    $pioniere="T.I";
+			    break;
+		    case '3':
+			    $pioniere="Reg.";
+			    break;
+		    case '4':
+			    $pioniere="Spec.";
+	    }
+			      
+	    if($r->irreg == '1') $irreg="<b>Irreg.</b>"; 
+	      else $irreg = "-";
+	    
+	    //CONVERTI DATA FORMATO TESTUALE
+	    $dateObj = DateTime::createFromFormat('U', $r->ts_report);
+	    $mese_anno = $dateObj->format('F Y');
+	    
+	    $table.=<<<EOD
+    
+	    <tr>
+		    <td>$mese_anno</td>
+		    <td>{$r->pubb}</td>
+		    <td>{$r->video}</td>
+		    <td><b>{$r->ore}</b></td>
+		    <td>{$r->visite}</td>
+		    <td>{$r->studi}</td>
+		    <td>{$r->note}</td>
+		    <td>$pioniere</td>
+		    <td>$irreg</td>
+	    </tr>
 EOD;
-			}
+	}
 			
 			
-			
-				$tot_all=mysqli_query($mysqli, 
-				"SELECT SUM(pubb) AS pubb, SUM(video) AS video, SUM(ore) AS ore, SUM(visite) AS vis, SUM(studi) AS stu
-				FROM reports
-				WHERE (ts_report >= $anno_minus_one_ts AND ts_report < $anno_ts)
-				  AND id_p = {$proc->id}");
-				
-				
-				$t_all=mysqli_fetch_assoc($tot_all);
-					
-						$table_tot.=<<<EOD
-							<tr style="background:#26AA4E;color:#fff">
-								<td><b>Totale anno teocratico</b></td>
-								<td>{$t_all['pubb']}</td>
-								<td>{$t_all['video']}</td>
-								<td>{$t_all['ore']}</td>
-								<td>{$t_all['vis']}</td>
-								<td>{$t_all['stu']}</td>
-							</tr>
+	$reports_sum = $HandleReports->get_reports_sum($proc->id, $ts_cond_array);
+	$r_sum = array2object($reports_sum[0]);
+	
+	$table_tot.=<<<EOD
+		
+	  <tr style="background:#26AA4E;color:#fff">
+		  <td><b>Totale anno teocratico</b></td>
+		  <td>{$r_sum->pubb}</td>
+		  <td>{$r_sum->video}</td>
+		  <td>{$r_sum->ore}</td>
+		  <td>{$r_sum->visite}</td>
+		  <td>{$r_sum->studi}</td>
+	  </tr>
 EOD;
 					
 					
@@ -174,10 +158,8 @@ EOD;
 			$table_tot
 	</table>
 EOD;
-	} else {
-		echo 'Nessun rapporto trovato per questo proclamatore.';
-	}
 
 } else {
-	echo '<i>Seleziona sopra una data.</i>';
+		echo 'Nessun rapporto trovato per questo proclamatore.';
+
 }

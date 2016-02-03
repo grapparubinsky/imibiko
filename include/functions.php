@@ -220,7 +220,6 @@ function year_month_to_ts($month = false, $year = false){
   
 }
 
-
 class HandleReports {
 
 
@@ -315,7 +314,7 @@ class HandleReports {
   
   }
 
-  function get_reports($domain = 'all', $domain_id = false, $ts_report = false) {
+  function get_reports($domain = 'all', $domain_id = false, $ts_report = false, $segmented_by_month = false) {
   
       if($ts_report)
 	$this->process_ts($ts_report);
@@ -338,7 +337,7 @@ class HandleReports {
       foreach($proc_list as $proc) {
 	  $proc = array2object($proc);
 	  
-	    $r = $this->get_reports_row($proc->id, $ts_report);
+	    $r = $this->get_reports_row($proc->id, $ts_report, $segmented_by_month);
 	    $r = array2object($r[0]); // per un accesso più comodo	
     
 	      // add value from $proc
@@ -366,19 +365,41 @@ class HandleReports {
   }
   
   
-  function get_reports_row($proc_id, $ts_report = false) {
+  function get_reports_row($proc_id, $ts_report = false, $segmented_by_month = false) {
+      if($ts_report)
+	$this->process_ts($ts_report);
+      
+      $proc_id = my_escape($proc_id);
+      
+      if($segmented_by_month) 
+	$add_sql_group = "GROUP BY ts_report";
+      else
+	$add_sql_group = '';
+      
+      if(!empty($proc_id)) {
+      
+	  $sql = "SELECT * FROM reports WHERE id_p = {$proc_id} AND {$this->ts_sql_filter} $add_sql_group";
+	  return my_query($sql, 1);
+      }
+
+  }
+  
+  
+  function get_reports_sum($proc_id, $ts_report = false){
+      
       if($ts_report)
 	$this->process_ts($ts_report);
       
       $proc_id = my_escape($proc_id);
       
       if(!empty($proc_id)) {
-	  $sql = "SELECT * FROM reports WHERE id_p = {$proc_id} AND {$this->ts_sql_filter}";
+      
+	  $sql = "SELECT SUM(pubb) AS pubb, SUM(video) AS video, SUM(ore) AS ore, SUM(visite) AS visite, SUM(studi) AS studi FROM reports WHERE id_p = {$proc_id} AND {$this->ts_sql_filter} $add_sql_group";
 	  return my_query($sql, 1);
+	  
       }
 
   }
-  
   
    function get_proc_list($id = 1, $type = 'all') {
   
