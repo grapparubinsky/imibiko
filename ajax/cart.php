@@ -21,10 +21,9 @@ if (request_ifsetnotnull('proc_id')) {
 	$HandleReports = new HandleReports(FALSE, 1);
 	$proc_info = $HandleReports->get_proc_ext_info(request_ifset('proc_id'));
 	$proclamatore = $proc = array2object($proc_info[0]);
-		
 	$reports = $HandleReports->get_reports('proc', $proc->id, $ts_cond_array, 1);
-	$reports = array2object($reports);
 	
+	$reports = array2object($reports);
 	foreach($reports as $r) {
 	  
 				

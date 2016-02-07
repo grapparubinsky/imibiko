@@ -338,8 +338,31 @@ class HandleReports {
 	  $proc = array2object($proc);
 	  
 	    $r = $this->get_reports_row($proc->id, $ts_report, $segmented_by_month);
-	    $r = array2object($r[0]); // per un accesso più comodo	
-    
+	    if($segmented_by_month) {
+	      $r = array2object($r); // per un accesso più comodo
+	      
+	        foreach($r as $r) {
+		    // add value from $proc
+		  set_default_class_property_value($r, 'id_p', $proc->id);
+		  set_default_class_property_value($r, 'nome', $proc->nome);
+		  set_default_class_property_value($r, 'cognome', $proc->cognome);
+		  set_default_class_property_value($r, 'nome_gruppo', $proc->nome_gruppo);
+	
+		  // set default value for $r object
+		  set_default_class_property_value($r, 'ts_report');
+		  set_default_class_property_value($r, 'pubb');
+		  set_default_class_property_value($r, 'video');
+		  set_default_class_property_value($r, 'ore');
+		  set_default_class_property_value($r, 'visite');
+		  set_default_class_property_value($r, 'studi');
+		  set_default_class_property_value($r, 'note');
+		  set_default_class_property_value($r, 'pioniere', $proc->pioniere);
+		  set_default_class_property_value($r, 'irreg');
+		  $array[] = $r;
+		}
+	    
+	    } else {
+	      $r = array2object($r[0]); // per un accesso più comodo
 	      // add value from $proc
 	      set_default_class_property_value($r, 'id_p', $proc->id);
 	      set_default_class_property_value($r, 'nome', $proc->nome);
@@ -356,11 +379,12 @@ class HandleReports {
 	      set_default_class_property_value($r, 'note');
 	      set_default_class_property_value($r, 'pioniere', $proc->pioniere);
 	      set_default_class_property_value($r, 'irreg');
+	      $array[] = $r;
+	    }
 	      
-	   $array[] = $r;
-      	
-      }
+	//   print_r($array);
       
+      }
       return $array;
   }
   
@@ -379,6 +403,7 @@ class HandleReports {
       if(!empty($proc_id)) {
       
 	  $sql = "SELECT * FROM reports WHERE id_p = {$proc_id} AND {$this->ts_sql_filter} $add_sql_group";
+	 // echo $sql;
 	  return my_query($sql, 1);
       }
 
@@ -430,7 +455,7 @@ class HandleReports {
       
       $id = my_escape($id);
 	
-	 $sql = "SELECT p.*, c.comune, c.address, c.n_casa, c.n_cell FROM proclamatori AS p LEFT JOIN contatti AS c ON p.id = c.id_p WHERE p.id = {$id}";
+	 $sql = "SELECT p.*, c.comune, c.address, c.n_casa, c.n_cell, c.email FROM proclamatori AS p LEFT JOIN contatti AS c ON p.id = c.id_p WHERE p.id = {$id}";
 	
 	 return my_query($sql, 1);
 	 
