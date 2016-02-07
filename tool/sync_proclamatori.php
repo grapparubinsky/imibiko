@@ -4,7 +4,8 @@ require_once (__DIR__.'/../include/dumper.php');
 $file= __DIR__."/../backup/tmp_proclamatori.sql";
 
 
-    $result = exec("mysqldump -u{$LocalDb['user']} {$LocalDb['db']} proclamatori > {$file}");
+    $result = exec("mysqldump -u{$LocalDb['user']} -p{$LocalDb['pass']} {$LocalDb['db']} proclamatori > {$file}");
+
 
 
 /*

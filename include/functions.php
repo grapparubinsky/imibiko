@@ -106,10 +106,21 @@ function empty_so_zero($array) {
 }
 
 
+
 function set_default_class_property_value($class, $property, $default = ''){
   
   if(!property_exists($class, $property))
     $class->$property = $default;
+
+}
+function set_default_ifnull_or_empty($var, $default = ''){
+  
+  if(empty($var) || is_null($var))
+    $var = $default;
+  else 
+    $var = $var;
+    
+  return $var;
 
 }
 
@@ -179,6 +190,7 @@ return $html;
 
 }
 
+
 function get_years_select_options(){
 
   date_default_timezone_set('Europe/Rome');
@@ -208,23 +220,48 @@ function year_month_to_ts($month = false, $year = false){
   
 }
 
-
-
-
-
-
 class HandleReports {
 
 
-  function __construct() {
+  function __construct($ts = false, $bypass_ts = false) {
     $this->req_array 	=	rebuild_array_please(sanitate($_REQUEST));
     $this->req_obj	=	array2object($this->req_array);
     
-    $this->ts_report	=	year_month_to_ts();
+    $this->ts		=	$ts;
+    
+    if(!$bypass_ts) {
+      $this->process_ts(); // inizializza date
+    }
     
   }
 
+  function process_ts($ts = false){
+  
+    if(!empty($ts)){
+      $var = $ts;
+    } else {
+      $var = $this->ts;
+    }
+    
+      if(!$var) {
+	$this->ts_report 	= year_month_to_ts();
+      } elseif(is_array($var)) {
+	$this->ts_report 	= sanitate($var);
+      } elseif(!empty($var)) {	
+	$this->ts_report 	= my_escape($var);
+      }
+      
+      $this->ts_sql_filter = $this->process_ts_sql_filter();
 
+  }
+  
+  function process_ts_sql_filter(){
+    if(is_array($this->ts_report))
+      return "(ts_report >= {$this->ts_report['start_ts']} AND ts_report < {$this->ts_report['end_ts']})";
+    else
+      return "(ts_report = {$this->ts_report})";
+  }
+  
   function insert_or_update() {
   
 	
@@ -233,6 +270,17 @@ class HandleReports {
       foreach($this->req_obj as $row) {
 	
 	if(!empty($row->ore) || $row->irreg == 1) {
+	    
+	     // add default value if null or empty
+	     
+	     $row->pubb 	= set_default_ifnull_or_empty($row->pubb, 0);
+	     $row->video	= set_default_ifnull_or_empty($row->video, 0);
+	     $row->ore		= set_default_ifnull_or_empty($row->ore, 0);
+	     $row->vis		= set_default_ifnull_or_empty($row->vis, 0);
+	     $row->stu		= set_default_ifnull_or_empty($row->stu, 0);
+	     $row->note		= set_default_ifnull_or_empty($row->note, '');
+	     $row->pioniere	= set_default_ifnull_or_empty($row->pioniere, 0);
+	     $row->irreg	= set_default_ifnull_or_empty($row->irreg, 0);
 	    
 	      $sql_update = "INSERT INTO 
 			    reports SET
@@ -266,10 +314,10 @@ class HandleReports {
   
   }
 
-  function get_reports($domain = 'all', $domain_id = false, $ts_report = false) {
+  function get_reports($domain = 'all', $domain_id = false, $ts_report = false, $segmented_by_month = false) {
   
-      if(!$ts_report)
-	$ts_report = $this->ts_report;
+      if($ts_report)
+	$this->process_ts($ts_report);
       
      	switch($domain){
 	  case 'all':
@@ -289,9 +337,32 @@ class HandleReports {
       foreach($proc_list as $proc) {
 	  $proc = array2object($proc);
 	  
-	    $r = $this->get_reports_row($proc->id, $ts_report);
-	    $r = array2object($r[0]); // per un accesso più comodo	
-    
+	    $r = $this->get_reports_row($proc->id, $ts_report, $segmented_by_month);
+	    if($segmented_by_month) {
+	      $r = array2object($r); // per un accesso più comodo
+	      
+	        foreach($r as $r) {
+		    // add value from $proc
+		  set_default_class_property_value($r, 'id_p', $proc->id);
+		  set_default_class_property_value($r, 'nome', $proc->nome);
+		  set_default_class_property_value($r, 'cognome', $proc->cognome);
+		  set_default_class_property_value($r, 'nome_gruppo', $proc->nome_gruppo);
+	
+		  // set default value for $r object
+		  set_default_class_property_value($r, 'ts_report');
+		  set_default_class_property_value($r, 'pubb');
+		  set_default_class_property_value($r, 'video');
+		  set_default_class_property_value($r, 'ore');
+		  set_default_class_property_value($r, 'visite');
+		  set_default_class_property_value($r, 'studi');
+		  set_default_class_property_value($r, 'note');
+		  set_default_class_property_value($r, 'pioniere', $proc->pioniere);
+		  set_default_class_property_value($r, 'irreg');
+		  $array[] = $r;
+		}
+	    
+	    } else {
+	      $r = array2object($r[0]); // per un accesso più comodo
 	      // add value from $proc
 	      set_default_class_property_value($r, 'id_p', $proc->id);
 	      set_default_class_property_value($r, 'nome', $proc->nome);
@@ -300,35 +371,60 @@ class HandleReports {
     
 	      // set default value for $r object
 	      set_default_class_property_value($r, 'ts_report');
-	      set_default_class_property_value($r, 'pubb', 0);
-	      set_default_class_property_value($r, 'video', 0);
-	      set_default_class_property_value($r, 'ore', 0);
-	      set_default_class_property_value($r, 'visite', 0);
-	      set_default_class_property_value($r, 'studi', 0);
+	      set_default_class_property_value($r, 'pubb');
+	      set_default_class_property_value($r, 'video');
+	      set_default_class_property_value($r, 'ore');
+	      set_default_class_property_value($r, 'visite');
+	      set_default_class_property_value($r, 'studi');
 	      set_default_class_property_value($r, 'note');
-	      set_default_class_property_value($r, 'pioniere', 0);
-	      set_default_class_property_value($r, 'irreg', 0);
+	      set_default_class_property_value($r, 'pioniere', $proc->pioniere);
+	      set_default_class_property_value($r, 'irreg');
+	      $array[] = $r;
+	    }
 	      
-	   $array[] = $r;
-      	
-      }
+	//   print_r($array);
       
+      }
       return $array;
   }
   
   
-  function get_reports_row($proc_id, $ts_report = false) {
-      if(!$ts_report)
-	$ts_report = $this->ts_report;
+  function get_reports_row($proc_id, $ts_report = false, $segmented_by_month = false) {
+      if($ts_report)
+	$this->process_ts($ts_report);
       
       $proc_id = my_escape($proc_id);
       
-      if(!empty($proc_id) && $ts_report) {
-		return my_query("SELECT * FROM reports WHERE id_p = {$proc_id} AND ts_report = {$ts_report}", 1);
+      if($segmented_by_month) 
+	$add_sql_group = "GROUP BY ts_report";
+      else
+	$add_sql_group = '';
+      
+      if(!empty($proc_id)) {
+      
+	  $sql = "SELECT * FROM reports WHERE id_p = {$proc_id} AND {$this->ts_sql_filter} $add_sql_group";
+	 // echo $sql;
+	  return my_query($sql, 1);
       }
 
   }
   
+  
+  function get_reports_sum($proc_id, $ts_report = false){
+      
+      if($ts_report)
+	$this->process_ts($ts_report);
+      
+      $proc_id = my_escape($proc_id);
+      
+      if(!empty($proc_id)) {
+      
+	  $sql = "SELECT SUM(pubb) AS pubb, SUM(video) AS video, SUM(ore) AS ore, SUM(visite) AS visite, SUM(studi) AS studi FROM reports WHERE id_p = {$proc_id} AND {$this->ts_sql_filter} $add_sql_group";
+	  return my_query($sql, 1);
+	  
+      }
+
+  }
   
    function get_proc_list($id = 1, $type = 'all') {
   
@@ -355,11 +451,22 @@ class HandleReports {
 
   }
   
+    function get_proc_ext_info($id) {
+      
+      $id = my_escape($id);
+	
+	 $sql = "SELECT p.*, c.comune, c.address, c.n_casa, c.n_cell, c.email FROM proclamatori AS p LEFT JOIN contatti AS c ON p.id = c.id_p WHERE p.id = {$id}";
+	
+	 return my_query($sql, 1);
+	 
+      }
+
+  
   
     function get_missing_reports($ts_report = false) {
     $html='';
-      if(!$ts_report)
-	$ts_report = $this->ts_report;
+      if($ts_report)
+	$this->process_ts($ts_report);
       
       	$proc_list = $this->get_proc_list();
 	foreach($proc_list as $proc) {
